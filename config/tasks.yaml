@@ -1,0 +1,17 @@
+data_crawler_task:
+  description: >
+    xx
+  expected_output: >
+    xx
+
+data_engineer_task:
+  description: >
+    Given {date}, fetch the data from the given location, store them in a vector store,
+  expected_output: >
+    Given date, all the news data is stored properly for that date,
+
+data_analyst_task:
+  description: >
+    Given {date}, summarize all the news data from the date, and fetch a summary as a news reporter,
+  expected_output: >
+    Show the news summary in the fashion of a news reporter to describe.

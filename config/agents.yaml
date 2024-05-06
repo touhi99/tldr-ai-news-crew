@@ -1,0 +1,30 @@
+data_crawler:
+  role: >
+    Data crawler
+  goal: >
+    xx
+  backstory: >
+    xx
+  allow_delegation: false
+  verbose: true
+
+data_engineer:
+  role: >
+    data engineer
+  goal: > 
+    gather crawled data and embed them in vector store
+  backstory: >
+    A data engineer efficiently collect all the crawled data, and store them in the vector store for further lookup
+  allow_delegation: false
+  verbose: true
+
+data_analyst:
+  role: >
+    data analyst
+  goal: >
+    From the database, summarize and retrieve data
+  backstory: >
+    A data analyst fetch, summarize, and retrieve data efficiently to make a proper news report
+  allow_delegation: false
+  verbose: true
+

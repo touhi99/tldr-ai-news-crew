@@ -7,13 +7,22 @@ from langchain.tools import tool
 
 @tool("embedder-tool", return_direct=False)
 def embed_news(date):
-    base_path = os.path.dirname((os.path.abspath(__file__)))
+    """Given date, find the data of that date news and embed them to vector store
+
+    Args:
+        date (str): the date as the folder name
+
+    Returns:
+        str: A confirmation about the data store
+    """
+    base_path = os.path.dirname(os.path.dirname((os.path.abspath(__file__))))
     path = os.path.join(base_path, 'crawled_data', date)
     for filename in os.listdir(path):
         all_splits = []
         if filename.endswith(".txt"): 
             file_path = os.path.join(path, filename)
             with open(file_path, 'r') as file: 
+                print(file)
                 loader = TextLoader(file)
                 docs = loader.load()
 

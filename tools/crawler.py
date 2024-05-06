@@ -62,6 +62,8 @@ def crawl_page(url, date, driver):
 
 @tool("crawler-tool", return_direct=False)
 def crawler_tool():
+    """Crawl the data of the given date
+    """
     driver = setup_driver()
     
     date = '2024-05-03' #TODO: Automatic or last one
