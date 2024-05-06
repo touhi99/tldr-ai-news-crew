@@ -21,17 +21,17 @@ def embed_news(date):
         all_splits = []
         if filename.endswith(".txt"): 
             file_path = os.path.join(path, filename)
-            with open(file_path, 'r') as file: 
-                print(file)
-                loader = TextLoader(file)
-                docs = loader.load()
+            #with open(file_path, 'r') as file: 
+            #    print(file)
+            loader = TextLoader(file_path)
+            docs = loader.load()
 
-                text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-                splits = text_splitter.split_documents(docs)
-                all_splits.extend(splits)  # Accumulate splits from all articles
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            splits = text_splitter.split_documents(docs)
+            all_splits.extend(splits)  # Accumulate splits from all articles
 
     if all_splits:
-        Chroma.from_documents(all_splits, embedding=load_embedding(), persist_directory="../chroma_db/"+ date)
+        Chroma.from_documents(all_splits, embedding=load_embedding(), persist_directory="chroma_db/"+ date)
         #retriever = vectorstore.similarity_search(query)
         return "Content stored"
     else:
@@ -40,6 +40,6 @@ def embed_news(date):
 @tool("retriever-tool", return_direct=True)
 def get_news(date, query) -> str:
     """Search Chroma DB for relevant news information based on a query."""
-    vectorstore = Chroma(persist_directory="../chroma_db/"+date, embedding_function=load_embedding())
+    vectorstore = Chroma(persist_directory="chroma_db/"+date, embedding_function=load_embedding())
     retriever = vectorstore.similarity_search(query)
     return retriever

@@ -6,3 +6,4 @@ crawled_data/*
 output/*
 */__pycache__/*
 **/__pycache__
+chroma_db/*
