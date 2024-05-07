@@ -67,5 +67,5 @@ class TLDRNewsCrew:
             tasks = self.tasks,
             process = Process.sequential,
             verbose=True,
-            max_rpm=2
+            max_rpm=8
         )

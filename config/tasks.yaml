@@ -12,6 +12,6 @@ data_engineer_task:
 
 data_analyst_task:
   description: >
-    Given {date}, summarize all the news data from the date, and fetch a summary as a news reporter,
+    Given {date}, summarize all the important retrieved news data from the date, and fetch the summary as a news reporter.
   expected_output: >
-    Show the news summary in the fashion of a news reporter to describe.
+    Show the concise retrieved news summary in the fashion of a news reporter to describe.
