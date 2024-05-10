@@ -1,0 +1,10 @@
+webdriver_manager
+crewai
+crewai[tools]
+langchain
+langchain-groq
+langchain-openai
+langchain-chroma
+git+https://github.com/collabora/WhisperSpeech   
+webdataset
+streamlit

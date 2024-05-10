@@ -28,3 +28,12 @@ data_analyst:
   allow_delegation: false
   verbose: true
 
+speaker_agent:
+  role: >
+    speaker agent
+  goal: >
+    Convert text to speech
+  backstory: >
+    Speaker is the main presenter who reads the collected full news
+  allow_delegation: false
+  verbose: true

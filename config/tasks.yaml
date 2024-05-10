@@ -15,3 +15,9 @@ data_analyst_task:
     Given {date}, summarize all the important retrieved news data from the date, and fetch the summary as a news reporter.
   expected_output: >
     Show the concise retrieved news summary in the fashion of a news reporter to describe.
+
+speaker_task:
+  description: >
+    given the full news report text, speaker convert the text to audio mp3, and play the audio file
+  expected_output: >
+    The tool plays the saved audio file
