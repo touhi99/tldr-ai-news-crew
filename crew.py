@@ -13,8 +13,7 @@ class TLDRNewsCrew:
         self.local_llm = load_llm('local')
         self.groq_llm = load_llm("groq")
         self.openai_llm = load_llm("openai")
-
-    '''
+    
     @agent
     def news_fetcher_agent(self) -> Agent:
         return Agent(
@@ -22,7 +21,7 @@ class TLDRNewsCrew:
             llm = self.groq_llm,
             tools = [crawler_tool]
         )
-    '''
+    
     @agent
     def data_engineer_agent(self) -> Agent:
         return Agent(
@@ -35,7 +34,7 @@ class TLDRNewsCrew:
     def data_analyst_agent(self) -> Agent:
         return Agent(
             config = self.agents_config['data_analyst'],
-            llm = self.groq_llm,
+            llm = self.openai_llm,
             tools = [get_news]
         )
     
@@ -47,12 +46,12 @@ class TLDRNewsCrew:
             tools = [tts]
         )
 
-    # @task
-    # def data_crawler_task(self) -> Task:
-    #     return Task(
-    #         config = self.tasks_config['data_crawler_task'],
-    #         agent = self.news_fetcher_agent()
-    #     )
+    @task
+    def data_crawler_task(self) -> Task:
+        return Task(
+            config = self.tasks_config['data_crawler_task'],
+            agent = self.news_fetcher_agent()
+        )
 
     @task
     def data_engineer_task(self) -> Task:
@@ -75,8 +74,17 @@ class TLDRNewsCrew:
             agent = self.speaker_agent()
         ) 
     @crew
-    def crew(self) -> Crew:
+    def crew(self, speech_agent_bool) -> Crew:
         "Create the TLDR News Crew"
+        if speech_agent_bool:
+            print("HERE")
+            self.agents = [self.news_fetcher_agent(), self.data_engineer_agent(), self.data_analyst_agent(), self.speaker_agent()]
+            self.tasks = [self.data_crawler_task(), self.data_engineer_task(), self.data_analyst_task(), self.speaker_task()]
+        else:
+            print("THERE")
+            self.agents = [self.news_fetcher_agent(), self.data_engineer_agent(), self.data_analyst_agent()]
+            self.tasks = [self.data_crawler_task(), self.data_engineer_task(), self.data_analyst_task()]
+
         return Crew(
             agents= self.agents,
             tasks = self.tasks,

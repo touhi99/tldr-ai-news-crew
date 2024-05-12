@@ -1,8 +1,8 @@
 data_crawler_task:
   description: >
-    xx
+    Given {date}, crawl the data from the webpage.
   expected_output: >
-    xx
+    Crawled data saved directly from the tool.
 
 data_engineer_task:
   description: >

@@ -6,7 +6,7 @@ from llms import load_embedding
 from langchain.tools import tool
 import chromadb
 
-@tool("embedder-tool", return_direct=False)
+@tool("embedder-tool", return_direct=True)
 def embed_news(date):
     """Given date, find the data of that date news and embed them to vector store
 

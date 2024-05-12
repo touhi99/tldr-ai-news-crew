@@ -1,0 +1,10 @@
+{
+    "model": {
+        "tts_model": "collabora/whisperspeech:s2a-q4-tiny-en+pl.model"
+    },
+    "file_path":
+    {
+        "clone_file": "data/testvoc.mp3",
+        "saved_audio_file": "data/audio.mp3"
+    }
+}

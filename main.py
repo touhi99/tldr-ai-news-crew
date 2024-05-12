@@ -3,6 +3,8 @@ load_dotenv()
 from crew import TLDRNewsCrew
 import re 
 import streamlit as st 
+st.set_page_config(layout="wide")
+
 import time
 import sys 
 
@@ -11,9 +13,10 @@ task_values = []
 
 def run_crew(crawling_date):
     inputs = { 
-        'date' : crawling_date #'2024-05-03'
+        'date' : crawling_date, #'2024-05-03',
     }
-    TLDRNewsCrew().crew().kickoff(inputs=inputs)
+    speech_agent = False
+    return TLDRNewsCrew().crew(speech_agent).kickoff(inputs=inputs)
 
 #display the console processing on streamlit UI
 class StreamToExpander:
@@ -90,8 +93,8 @@ def run_crewai_app():
         total_time = end_time - start_time
         stopwatch_placeholder.text(f"Total Time Elapsed: {total_time:.2f} seconds")
 
-        st.header("Tasks:")
-        st.table({"Tasks" : task_values})
+        #st.header("Tasks:")
+        #st.table({"Tasks" : task_values})
 
         st.header("Results:")
         st.markdown(crew_result)

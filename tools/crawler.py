@@ -60,16 +60,20 @@ def crawl_page(url, date, driver):
         print(f"Error visiting {url}: {str(e)}")
 
 
-@tool("crawler-tool", return_direct=False)
-def crawler_tool():
-    """Crawl the data of the given date
+@tool("crawler-tool", return_direct=True)
+def crawler_tool(date):
     """
+    Crawl the data of the given date
+    """
+    data_dir = os.path.join('crawled_data', date)
+    if os.path.exists(data_dir) and os.listdir(data_dir):
+        return "Data already available"
+
     driver = setup_driver()
-    
-    date = '2024-05-03' #TODO: Automatic or last one
-    url = 'https://tldr.tech/ai/2024-05-03'
+    url = 'https://tldr.tech/ai/'+date
     crawl_page(url, date, driver)
     
     driver.quit()
+    return "Crawled successfully"
 
 #crawler_tool()
