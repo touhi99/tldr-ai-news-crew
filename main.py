@@ -11,11 +11,12 @@ import sys
 
 task_values = []
 
-def run_crew(crawling_date):
+def run_crew(crawling_date, run_speech):
     inputs = { 
         'date' : crawling_date, #'2024-05-03',
     }
-    speech_agent = False
+    print(run_speech)
+    speech_agent = run_speech
     return TLDRNewsCrew().crew(speech_agent).kickoff(inputs=inputs)
 
 #display the console processing on streamlit UI
@@ -23,11 +24,10 @@ class StreamToExpander:
     def __init__(self, expander):
         self.expander = expander
         self.buffer = []
-        self.colors = ['red', 'green', 'blue', 'orange']  # Define a list of colors
-        self.color_index = 0  # Initialize color index
+        self.colors = ['red', 'green', 'blue', 'orange'] 
+        self.color_index = 0  
 
     def write(self, data):
-        # Filter out ANSI escape codes using a regular expression
         cleaned_data = re.sub(r'\x1B\[[0-9;]*[mK]', '', data)
 
         # Check if the data contains 'task' information
@@ -72,10 +72,9 @@ def run_crewai_app():
     with st.expander("About the Team:"):
         st.subheader("Diagram")
         left_co, cent_co,last_co = st.columns(3)
-        #with cent_co:
-        #    st.image("my_img.png")
     
     crawling_date = st.text_input("Enter a date")
+    run_speech = st.checkbox("Listen news")
 
     if st.button("Run Analysis"):
         # Placeholder for stopwatch
@@ -83,18 +82,15 @@ def run_crewai_app():
         
         # Start the stopwatch
         start_time = time.time()
-        with st.expander("Processing!"):
+        with st.expander("Processing!", expanded=True):
             sys.stdout = StreamToExpander(st)
             with st.spinner("Generating Results"):
-                crew_result = run_crew(crawling_date)
+                crew_result = run_crew(crawling_date, run_speech)
 
         # Stop the stopwatch
         end_time = time.time()
         total_time = end_time - start_time
         stopwatch_placeholder.text(f"Total Time Elapsed: {total_time:.2f} seconds")
-
-        #st.header("Tasks:")
-        #st.table({"Tasks" : task_values})
 
         st.header("Results:")
         st.markdown(crew_result)
