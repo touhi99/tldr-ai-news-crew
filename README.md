@@ -21,11 +21,5 @@ Give a date: YYYY-MM-DD format (i am lazy atm to validate)
 
 ### TODO
 
-1. Crawl specific page by date (crew #1) (DONE, data_crawler)
-2. visit all link -> each subject, content and url is one doc for a RAG system (crew #2) (DONE, data_engineer)
-3. Summarize the top-k content and provide report (crew #3) (Halfway DONE, data_analyzer)
-5. Use TTS (with some news background) (crew #4) (DONE for fun test)
-6. audio available
-7. Streamlit/API (DONE) (Yes, probably not the best cases to just read news running a streamlit, but somehow does the job now for learning)
-8. Get range of news (last 3 days, last weeks)
-9. Get personalized/preferred input news
+1. Get range of news (last 3 days, last weeks)
+2. Get personalized/preferred input news
