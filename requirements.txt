@@ -8,3 +8,4 @@ langchain-chroma
 git+https://github.com/collabora/WhisperSpeech   
 webdataset
 streamlit
+langsmith

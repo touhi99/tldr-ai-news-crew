@@ -8,7 +8,7 @@ data_engineer_task:
   description: >
     Given {date}, fetch the data from the given location, store them in a vector store,
   expected_output: >
-    Given date, all the news data is stored properly for that date,
+    Given date, all the news data is stored properly for that date.
 
 data_analyst_task:
   description: >
@@ -17,7 +17,13 @@ data_analyst_task:
     Show the concise retrieved news summary in the fashion of a news reporter to describe.
 
 speaker_task:
-  description: >
-    given the full news report text, speaker convert the text to audio mp3, and play the audio file
+  description: > 
+    given the full news report text, speaker convert the text to audio mp3, and play the audio file.
   expected_output: >
-    The tool plays the saved audio file
+    The tool plays the saved audio file.
+
+news_qa_support_task:
+  description: >
+    Given the user query, answer concisely from your context.
+  expected_output: >
+    resulted answer in simple text str.

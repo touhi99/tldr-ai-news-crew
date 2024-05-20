@@ -37,3 +37,13 @@ speaker_agent:
     Speaker is the main presenter who reads the collected full news
   allow_delegation: false
   verbose: true
+
+news_qa_support_agent:
+  role: >
+    Q&A support agent
+  goal:
+    given user queries from your data, give satisfactory answer to the user
+  backstory: >
+    You are an informative support agent, who reliably can answer user's question
+  allow_delegation: false
+  verbose: true

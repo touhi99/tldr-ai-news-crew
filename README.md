@@ -19,7 +19,10 @@ streamlit run main.py
 ```
 Give a date: YYYY-MM-DD format (i am lazy atm to validate)
 
+![Image](./fig/screenshot.png)
+
 ### TODO
 
 1. Get range of news (last 3 days, last weeks)
 2. Get personalized/preferred input news
+3. Add validation for crawling error

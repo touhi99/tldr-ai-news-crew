@@ -4,12 +4,18 @@ from crew import TLDRNewsCrew
 import re 
 import streamlit as st 
 st.set_page_config(layout="wide")
-
+import json
 import time
 import sys 
 
+with open('config/config.json', 'r') as file:
+    config = json.load(file)
 
-task_values = []
+if 'run_clicked' not in st.session_state:
+    st.session_state.run_clicked = False
+# After analysis, setup for chat
+if 'messages' not in st.session_state:
+    st.session_state.messages = []
 
 def run_crew(crawling_date, run_speech):
     inputs = { 
@@ -73,19 +79,31 @@ def run_crewai_app():
         st.subheader("Diagram")
         left_co, cent_co,last_co = st.columns(3)
     
-    crawling_date = st.text_input("Enter a date")
+    # Date selection setup
+    date_option = st.radio("Choose the type of date input:", ["Single Date", "Date Range"])
+    if date_option == "Single Date":
+        date_to_use = st.date_input("Select a Date for Analysis", format='YYYY-MM-DD')
+    elif date_option == "Date Range":
+        date_range = st.date_input("Select Date Range for Analysis", [], format='YYYY-MM-DD')
+        if len(date_range) == 2:
+            start_date, end_date = date_range
+            date_to_use = (start_date, end_date)
+        else:
+            st.error("Please select a complete date range.")
+            date_to_use = None
+
+    #crawling_date = st.text_input("Enter a date")
     run_speech = st.checkbox("Listen news")
 
-    if st.button("Run Analysis"):
-        # Placeholder for stopwatch
+    if st.button("Run Analysis", key='run_analysis'):
+        st.session_state.run_clicked = True
         stopwatch_placeholder = st.empty()
-        
-        # Start the stopwatch
         start_time = time.time()
-        with st.expander("Processing!", expanded=True):
+
+        with st.expander("Fetching...", expanded=True):
             sys.stdout = StreamToExpander(st)
             with st.spinner("Generating Results"):
-                crew_result = run_crew(crawling_date, run_speech)
+                crew_result = run_crew(date_to_use, run_speech)
 
         # Stop the stopwatch
         end_time = time.time()
@@ -93,7 +111,26 @@ def run_crewai_app():
         stopwatch_placeholder.text(f"Total Time Elapsed: {total_time:.2f} seconds")
 
         st.header("Results:")
-        st.markdown(crew_result)
+        if run_speech:
+            audio_file = config['file_path']['saved_audio_file']
+            st.markdown(crew_result)
+            st.audio(audio_file, format='audio/mp3', start_time=0)
+        else:
+            st.markdown(crew_result)
+            # Display chat only if analysis has been run
+            if st.session_state.run_clicked:
+                chat_input = st.text_input("Chat with system", key="chat_input", value="")
+                if st.button("Send", key="send_chat"):
+                    handle_chat_input()
+                for message in st.session_state.messages:
+                    st.text(message)
+
+def handle_chat_input():
+    user_input = st.session_state.chat_input.strip()
+    if user_input:
+        st.session_state.messages.append(f"You: {user_input}")
+        st.session_state.messages.append("System: Analysis received, processing...")
+        st.session_state.chat_input = ""  # Clear the input box after submitting
 
 if __name__ == "__main__":
     run_crewai_app()    

@@ -33,7 +33,7 @@ def tts(text):
     """Convert the given query to a speech format
 
     Args:
-        text (_type_): _description_
+        text (str): news report text string
     """
     response = client.audio.speech.create(
         model="tts-1",
@@ -42,6 +42,6 @@ def tts(text):
     )
 
     audio_file_path = config['file_path']['saved_audio_file']
-    response.stream_to_file(audio_file_path)
-    subprocess.run(['afplay', audio_file_path]) 
-    return "Synthesized"
+    response.write_to_file(audio_file_path)
+    #subprocess.run(['afplay', audio_file_path]) 
+    return "Here's final news:"

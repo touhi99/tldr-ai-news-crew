@@ -44,6 +44,7 @@ def get_news(date, query) -> str:
     """Search Chroma DB for top news information based on a query. If a query returns null try similarly alternating query until it's not empty.
     Once top news has been found, summarize it and return as a reporter describing it."""
     vectorstore = Chroma(persist_directory="chroma_db/", collection_name = date, embedding_function=load_embedding())
+    print(query)
     retriever = vectorstore.similarity_search("Summarize top 5 latest AI news", k=10)
     page_content = ''
     for r in retriever:
