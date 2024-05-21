@@ -42,7 +42,7 @@ news_qa_support_agent:
   role: >
     Q&A support agent
   goal:
-    given user queries from your data, give satisfactory answer to the user
+    given user {query} and {date} from your data, give concise answer to the user
   backstory: >
     You are an informative support agent, who reliably can answer user's question
   allow_delegation: false

@@ -13,7 +13,6 @@ with open('config/config.json', 'r') as file:
 
 if 'run_clicked' not in st.session_state:
     st.session_state.run_clicked = False
-# After analysis, setup for chat
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
@@ -25,7 +24,6 @@ def run_crew(crawling_date, run_speech):
     speech_agent = run_speech
     return TLDRNewsCrew().crew(speech_agent).kickoff(inputs=inputs)
 
-#display the console processing on streamlit UI
 class StreamToExpander:
     def __init__(self, expander):
         self.expander = expander
@@ -36,7 +34,6 @@ class StreamToExpander:
     def write(self, data):
         cleaned_data = re.sub(r'\x1B\[[0-9;]*[mK]', '', data)
 
-        # Check if the data contains 'task' information
         task_match_object = re.search(r'\"task\"\s*:\s*\"(.*?)\"', cleaned_data, re.IGNORECASE)
         task_match_input = re.search(r'task\s*:\s*([^\n]*)', cleaned_data, re.IGNORECASE)
         task_value = None
@@ -48,10 +45,8 @@ class StreamToExpander:
         if task_value:
             st.toast(":robot_face: " + task_value)
 
-        # Check if the text contains the specified phrase and apply color
         if "Entering new CrewAgentExecutor chain" in cleaned_data:
-            # Apply different color and switch color index
-            self.color_index = (self.color_index + 1) % len(self.colors)  # Increment color index and wrap around if necessary
+            self.color_index = (self.color_index + 1) % len(self.colors)  
 
             cleaned_data = cleaned_data.replace("Entering new CrewAgentExecutor chain", f":{self.colors[self.color_index]}[Entering new CrewAgentExecutor chain]")
 
@@ -117,20 +112,23 @@ def run_crewai_app():
             st.audio(audio_file, format='audio/mp3', start_time=0)
         else:
             st.markdown(crew_result)
-            # Display chat only if analysis has been run
-            if st.session_state.run_clicked:
-                chat_input = st.text_input("Chat with system", key="chat_input", value="")
-                if st.button("Send", key="send_chat"):
-                    handle_chat_input()
-                for message in st.session_state.messages:
-                    st.text(message)
 
-def handle_chat_input():
+    if st.session_state.run_clicked:
+        chat_input = st.text_input("Chat with system", key="chat_input", value="")
+        send_button = st.button("Send", key="send_chat")
+        if send_button:
+            handle_chat_input(date_to_use)
+        for message in st.session_state.messages:
+            st.text(message)
+
+def handle_chat_input(date_to_use):
     user_input = st.session_state.chat_input.strip()
+    #print(user_input)
     if user_input:
         st.session_state.messages.append(f"You: {user_input}")
         st.session_state.messages.append("System: Analysis received, processing...")
-        st.session_state.chat_input = ""  # Clear the input box after submitting
+        st.session_state.messages.append(TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"query": user_input, "date": date_to_use}))
+        st.session_state.chat_input = ""
 
 if __name__ == "__main__":
     run_crewai_app()    
