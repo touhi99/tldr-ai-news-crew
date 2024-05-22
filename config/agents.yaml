@@ -6,7 +6,7 @@ data_crawler:
   backstory: >
     You are a master crawler, who extracts all the important news info from the page.
   allow_delegation: false
-  verbose: true
+  verbose: false
 
 data_engineer:
   role: >
@@ -45,5 +45,15 @@ news_qa_support_agent:
     given user {query} and {date} from your data, give concise answer to the user
   backstory: >
     You are an informative support agent, who reliably can answer user's question
+  allow_delegation: false
+  verbose: true
+
+ai_prompt_engineer:
+  role: >
+    ai prompt engineer
+  goal:
+    given user {query}, rewrite the query to be concise and with clear objective for the model.
+  backstory: >
+    You are an elegant AI prompt writer, your task defines the LLM model's success and a user satisfaction.
   allow_delegation: false
   verbose: true

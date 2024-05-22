@@ -13,3 +13,9 @@ def get_qa(date, query) -> str:
     for r in retriever:
         page_content += r.page_content 
     return page_content
+
+
+@tool("query-rewriter", return_direct=False)
+def query_rewriter(query) -> str:
+    """Given {query}, transform it to suit better for an LLM prompt which can achieve better accuracy as an outcome. Do not go into a loop."""
+    return query

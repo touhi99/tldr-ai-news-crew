@@ -27,3 +27,9 @@ news_qa_support_task:
     Given the user {query}, answer concisely from your context.
   expected_output: >
     resulted answer in simple text string.
+
+ai_prompt_engineer_task:
+  description: >
+    Given the user {query}, rewrite it to be better suited for LLM prompt to achieve a better answer. Do not go into a loop. Think thoroughly to answer, and once answered, exit only.
+  expected_output: >
+    detailed and concise rewritten query sent for LLM input to the next agent. 

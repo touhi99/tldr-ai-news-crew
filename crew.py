@@ -4,7 +4,7 @@ from llms import load_llm
 from tools.crawler import crawler_tool
 from tools.vectordb import get_news, embed_news
 from tools.speech import tts
-from tools.qa import get_qa
+from tools.qa import get_qa, query_rewriter
 @CrewBase
 class TLDRNewsCrew:
     agents_config = 'config/agents.yaml'
@@ -54,6 +54,14 @@ class TLDRNewsCrew:
             llm = self.openai_llm,
             tools = [get_qa]
         )
+    
+    @agent
+    def query_writer_agent(self) -> Agent:
+        return Agent(
+            config = self.agents_config['ai_prompt_engineer'],
+            llm = self.openai_llm,
+            tools = [query_rewriter]
+        )
 
     @task
     def data_crawler_task(self) -> Task:
@@ -90,6 +98,13 @@ class TLDRNewsCrew:
             agent = self.qa_agent()
         )
     
+    @task
+    def query_rewriter_task(self) -> Task:
+        return Task(
+            config = self.tasks_config['ai_prompt_engineer_task'],
+            agent = self.query_writer_agent()
+        )
+    
     @crew
     def crew(self, speech_agent_bool=False, qa_agent_bool=False) -> Crew:
         "Create the TLDR News Crew"
@@ -103,8 +118,8 @@ class TLDRNewsCrew:
             self.tasks = [self.data_crawler_task(), self.data_engineer_task(), self.data_analyst_task()]
         elif not speech_agent_bool and qa_agent_bool:
             print("INSIDE QA")
-            self.agents = [self.qa_agent()]
-            self.tasks = [self.qa_agent_task()]
+            self.agents = [self.query_writer_agent(), self.qa_agent()]
+            self.tasks = [self.query_rewriter_task(), self.qa_agent_task()]
 
         return Crew(
             agents= self.agents,
