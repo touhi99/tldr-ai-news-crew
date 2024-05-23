@@ -128,7 +128,7 @@ def handle_chat_input(date_to_use):
         st.session_state.messages.append(f"You: {user_input}")
         st.session_state.messages.append("System: Analysis received, processing...")
         st.session_state.messages.append(TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"query": user_input, "date": date_to_use}))
-        st.session_state.chat_input = ""
+        #st.session_state.chat_input = ""
 
 if __name__ == "__main__":
     run_crewai_app()    
