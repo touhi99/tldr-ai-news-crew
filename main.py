@@ -7,6 +7,7 @@ st.set_page_config(layout="wide")
 import json
 import time
 import sys 
+from util import *
 
 with open('config/config.json', 'r') as file:
     config = json.load(file)
@@ -18,7 +19,7 @@ if 'messages' not in st.session_state:
 
 def run_crew(crawling_date, run_speech):
     inputs = { 
-        'date' : crawling_date, #'2024-05-03',
+        'date' : crawling_date, #'YYYY-MM-DD',
     }
     print(run_speech)
     speech_agent = run_speech
@@ -77,17 +78,17 @@ def run_crewai_app():
     # Date selection setup
     date_option = st.radio("Choose the type of date input:", ["Single Date", "Date Range"])
     if date_option == "Single Date":
-        date_to_use = st.date_input("Select a Date for Analysis", format='YYYY-MM-DD')
+        date_to_use = [str(st.date_input("Select a Date for Analysis", format='YYYY-MM-DD'))]
     elif date_option == "Date Range":
         date_range = st.date_input("Select Date Range for Analysis", [], format='YYYY-MM-DD')
         if len(date_range) == 2:
             start_date, end_date = date_range
             date_to_use = (start_date, end_date)
+            date_to_use = get_weekdays(date_to_use)
         else:
             st.error("Please select a complete date range.")
             date_to_use = None
 
-    #crawling_date = st.text_input("Enter a date")
     run_speech = st.checkbox("Listen news")
 
     if st.button("Run Analysis", key='run_analysis'):
@@ -98,6 +99,7 @@ def run_crewai_app():
         with st.expander("Fetching...", expanded=True):
             sys.stdout = StreamToExpander(st)
             with st.spinner("Generating Results"):
+                print("HERE IS DATETONEWS", date_to_use)
                 crew_result = run_crew(date_to_use, run_speech)
 
         # Stop the stopwatch
@@ -128,7 +130,6 @@ def handle_chat_input(date_to_use):
         st.session_state.messages.append(f"You: {user_input}")
         st.session_state.messages.append("System: Analysis received, processing...")
         st.session_state.messages.append(TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"query": user_input, "date": date_to_use}))
-        #st.session_state.chat_input = ""
 
 if __name__ == "__main__":
     run_crewai_app()    

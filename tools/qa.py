@@ -4,14 +4,29 @@ from langchain_community.vectorstores import Chroma
 from llms import load_embedding
 
 @tool("qa-tool", return_direct=False)
-def get_qa(date, query) -> str:
-    """Given {query}, transform it to suit better for an LLM prompt which can achieve better accuracy as an outcome. Do not go into a loop. 
-    Then Search Chroma DB answer similar to the query for the mentioned date. Once similar chunk is found, formulate the answer and return the answer."""
-    vectorstore = Chroma(persist_directory="chroma_db/", collection_name = date, embedding_function=load_embedding())
-    print(query)
-    retriever = vectorstore.similarity_search(query, k=5)
-    page_content = ''
-    for r in retriever:
-        page_content += r.page_content 
-    return page_content
+def get_qa(dates, query) -> str:
+    """Search Chroma DB for top news information based on a query across multiple dates.
+    
+    Args:
+        dates (list): List of dates as folder names
+        query (str): The search query
 
+    Returns:
+        str: Aggregated news content from the top results
+    """
+    def retrieve_news(query, dates):
+        all_retrieved = []
+        for date in dates:
+            vectorstore = Chroma(persist_directory="chroma_db/", collection_name=date, embedding_function=load_embedding())
+            print(f"Querying for date: {date}")
+            retriever = vectorstore.similarity_search(query, k=5)
+            for r in retriever:
+                all_retrieved.append(r.page_content)
+        return all_retrieved
+
+    # Perform the retrieval once for all dates
+    all_retrieved_content = retrieve_news(query, dates)
+    
+    # Aggregate all results into a single string
+    aggregated_content = '\n'.join(all_retrieved_content)
+    return aggregated_content

@@ -16,25 +16,15 @@ data_engineer:
   backstory: >
     A data engineer efficiently collect all the crawled data, and store them in the vector store for further lookup
   allow_delegation: false
-  verbose: true
-
-data_analyst:
-  role: >
-    data analyst
-  goal: >
-    From the database, summarize and retrieve data
-  backstory: >
-    A data analyst fetch, summarize, and retrieve data efficiently to make a proper news report
-  allow_delegation: false
-  verbose: true
+  verbose: false
 
 speaker_agent:
   role: >
     speaker agent
   goal: >
-    Convert text to speech
+    Convert text to speech, optionally choose appropriate voice given user {query}
   backstory: >
-    Speaker is the main presenter who reads the collected full news
+    Speaker is the main presenter who reads the collected full news in a different voice.
   allow_delegation: false
   verbose: true
 
@@ -46,4 +36,4 @@ news_qa_support_agent:
   backstory: >
     You are an informative support agent, who reliably can answer user's question
   allow_delegation: false
-  verbose: true
+  verbose: false

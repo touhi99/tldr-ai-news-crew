@@ -8,19 +8,13 @@ data_engineer_task:
   description: >
     Given {date}, fetch the data from the given location, store them in a vector store,
   expected_output: >
-    Given date, all the news data is stored properly for that date.
-
-data_analyst_task:
-  description: >
-    Given {date}, summarize all the important retrieved news data from the date, and fetch the summary as a news reporter.
-  expected_output: >
-    Show the concise retrieved news summary in the fashion of a news reporter to describe.
+    Given dates, all the news data is stored properly for that date(s).
 
 speaker_task:
   description: > 
-    given the full news report text, speaker convert the text to audio mp3, and play the audio file.
+    given the user query, speaker choose the voice by criteria, convert the text to audio mp3, and save the audio.
   expected_output: >
-    The tool plays the saved audio file.
+    The tool choose the right voice and save the audio
 
 news_qa_support_task:
   description: >

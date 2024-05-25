@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import time
 import os
 from langchain.tools import tool
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def setup_driver():
     service = Service(ChromeDriverManager().install())
@@ -44,36 +45,54 @@ def crawl_page(url, date, driver):
         filepath = f"crawled_data/{date}/{os.path.basename(url).replace('/', '_')}.txt"
         save_to_text([url, text_content], filepath)
         print(f"Visited {url}, content saved under {filepath}")
-        
+
         # Extract URLs from the fetched page
-        urls = extract_urls(html)
-        for link in urls:
-            try:
-                link_html = fetch_page_source(link, driver)  # Visit each URL
-                link_text = BeautifulSoup(link_html, 'html.parser').get_text(separator=' ', strip=True)
-                link_path = f"crawled_data/{date}/linked_{os.path.basename(link).replace('/', '_')}.txt"
-                save_to_text([link, link_text], link_path)
-                print(f"Visited {link}, content saved under {link_path}")
-            except Exception as e:
-                print(f"Error visiting {link}: {str(e)}")
+        return extract_urls(html), date, driver
     except Exception as e:
         print(f"Error visiting {url}: {str(e)}")
+        return [], date, driver
 
+def crawl_link(link, date, driver):
+    try:
+        link_html = fetch_page_source(link, driver)
+        link_text = BeautifulSoup(link_html, 'html.parser').get_text(separator=' ', strip=True)
+        link_path = f"crawled_data/{date}/linked_{os.path.basename(link).replace('/', '_')}.txt"
+        save_to_text([link, link_text], link_path)
+        print(f"Visited {link}, content saved under {link_path}")
+    except Exception as e:
+        print(f"Error visiting {link}: {str(e)}")
 
 @tool("crawler-tool", return_direct=True)
-def crawler_tool(date):
+def crawler_tool(dates: list[str]):
     """
-    Crawl the data of the given date
+    Crawl the data for the given list of dates.
     """
-    data_dir = os.path.join('crawled_data', date)
-    if os.path.exists(data_dir) and os.listdir(data_dir):
-        return "Data already available"
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = []
+        for date in dates:
+            data_dir = os.path.join('crawled_data', date)
+            if os.path.exists(data_dir) and os.listdir(data_dir):
+                print(f"Data already available for {date}")
+                continue
 
-    driver = setup_driver()
-    url = 'https://tldr.tech/ai/'+date
-    crawl_page(url, date, driver)
-    
-    driver.quit()
+            driver = setup_driver()
+            url = f'https://tldr.tech/ai/{date}'
+            futures.append(executor.submit(crawl_page, url, date, driver))
+
+        for future in as_completed(futures):
+            try:
+                links, date, driver = future.result()
+                # Crawl the extracted links in parallel
+                link_futures = [executor.submit(crawl_link, link, date, driver) for link in links]
+                for link_future in as_completed(link_futures):
+                    link_future.result()
+                driver.quit()
+            except Exception as e:
+                print(f"Error in main page crawling: {str(e)}")
+
     return "Crawled successfully"
 
+
+
 #crawler_tool()
+#crawler_tool(['2024-05-22', '2024-05-23', '2024-05-24'])
