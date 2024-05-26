@@ -8,6 +8,8 @@ import json
 import time
 import sys 
 from util import *
+from audio_recorder_streamlit import audio_recorder
+from tools.voice import save_audio_file
 
 with open('config/config.json', 'r') as file:
     config = json.load(file)
@@ -78,13 +80,21 @@ def run_crewai_app():
     # Date selection setup
     date_option = st.radio("Choose the type of date input:", ["Single Date", "Date Range"])
     if date_option == "Single Date":
-        date_to_use = [str(st.date_input("Select a Date for Analysis", format='YYYY-MM-DD'))]
+        selected_date = st.date_input("Select a Date for Analysis", format='YYYY-MM-DD')
+        if is_weekday(selected_date):
+            date_to_use = [str(selected_date)]
+        else:
+            st.error("Please select a weekday.")
+            date_to_use = None
     elif date_option == "Date Range":
         date_range = st.date_input("Select Date Range for Analysis", [], format='YYYY-MM-DD')
         if len(date_range) == 2:
             start_date, end_date = date_range
-            date_to_use = (start_date, end_date)
-            date_to_use = get_weekdays(date_to_use)
+            if is_weekday(start_date) and is_weekday(end_date):
+                date_to_use = [d.strftime('%Y-%m-%d') for d in pd.date_range(start_date, end_date) if is_weekday(d)]
+            else:
+                st.error("Both start and end dates must be weekdays.")
+                date_to_use = None
         else:
             st.error("Please select a complete date range.")
             date_to_use = None
@@ -102,7 +112,6 @@ def run_crewai_app():
                 print("HERE IS DATETONEWS", date_to_use)
                 crew_result = run_crew(date_to_use, run_speech)
 
-        # Stop the stopwatch
         end_time = time.time()
         total_time = end_time - start_time
         stopwatch_placeholder.text(f"Total Time Elapsed: {total_time:.2f} seconds")
@@ -115,21 +124,31 @@ def run_crewai_app():
         else:
             st.markdown(crew_result)
 
-    if st.session_state.run_clicked:
-        chat_input = st.text_input("Chat with system", key="chat_input", value="")
-        send_button = st.button("Send", key="send_chat")
-        if send_button:
-            handle_chat_input(date_to_use)
-        for message in st.session_state.messages:
-            st.text(message)
+    if st.button('Record'):
+        audio_bytes = audio_recorder()
+        st.write("Recording...")
+        if audio_bytes:
+            st.write("Audio bytes received")
+            st.audio(audio_bytes, format="audio/wav")
+            audio_file = save_audio_file(audio_bytes, "mp3")
+            print("audio saved")
+            handle_chat_input(audio_file, date_to_use)
 
-def handle_chat_input(date_to_use):
-    user_input = st.session_state.chat_input.strip()
-    #print(user_input)
-    if user_input:
-        st.session_state.messages.append(f"You: {user_input}")
-        st.session_state.messages.append("System: Analysis received, processing...")
-        st.session_state.messages.append(TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"query": user_input, "date": date_to_use}))
+    for message in st.session_state.messages:
+        st.text(message)
 
+def handle_chat_input(audio_file, date_to_use):
+    if audio_file:
+        st.session_state.messages.append(f"You:")
+        response_text = "System: Processing your request..."
+        st.session_state.messages.append(response_text)
+        response_audio = TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"audio": audio_file, "date": date_to_use})
+        play_audio(response_audio)
+
+
+def play_audio(audio_data):
+    """ Play audio response """
+    st.audio(audio_data, format='audio/mp3')
+    
 if __name__ == "__main__":
     run_crewai_app()    

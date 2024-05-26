@@ -5,6 +5,7 @@ from tools.crawler import crawler_tool
 from tools.vectordb import embed_news_for_dates
 from tools.speech import tts
 from tools.qa import get_qa
+from tools.voice import transcribe
 @CrewBase
 class TLDRNewsCrew:
     agents_config = 'config/agents.yaml'
@@ -37,6 +38,14 @@ class TLDRNewsCrew:
             config = self.agents_config['speaker_agent'],
             llm = self.openai_llm,
             tools = [tts]
+        )
+    
+    @agent
+    def voice_agent(self) -> Agent:
+        return Agent(
+            config = self.agents_config['voice_agent'],
+            llm = self.groq_llm,
+            tools = [transcribe]
         )
     
     @agent
@@ -74,7 +83,13 @@ class TLDRNewsCrew:
             config = self.tasks_config['news_qa_support_task'],
             agent = self.qa_agent()
         )
-
+    
+    @task
+    def voice_agent_task(self) -> Task:
+        return Task(
+            config = self.tasks_config['voice_agent_task'],
+            agent = self.voice_agent()
+        )
     
     @crew
     def crew(self, speech_agent_bool=False, qa_agent_bool=False) -> Crew:
@@ -89,8 +104,8 @@ class TLDRNewsCrew:
             self.tasks = [self.data_crawler_task(), self.data_engineer_task()]
         elif qa_agent_bool:
             print("INSIDE QA")
-            self.agents = [self.qa_agent(), self.speaker_agent()]
-            self.tasks = [self.qa_agent_task(), self.speaker_task()]
+            self.agents = [self.voice_agent(), self.qa_agent(), self.speaker_agent()]
+            self.tasks = [self.voice_agent_task(), self.qa_agent_task(), self.speaker_task()]
 
         return Crew(
             agents= self.agents,

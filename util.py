@@ -5,3 +5,6 @@ def get_weekdays(date_range):
     start_date, end_date = date_range
     all_dates = pd.date_range(start=start_date, end=end_date, freq='B')  # 'B' frequency stands for business days
     return [date.strftime('%Y-%m-%d') for date in all_dates]
+
+def is_weekday(date):
+    return date.weekday() < 5  # Monday to Friday are 0-4

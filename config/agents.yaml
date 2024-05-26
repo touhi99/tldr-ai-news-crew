@@ -31,9 +31,19 @@ speaker_agent:
 news_qa_support_agent:
   role: >
     Q&A support agent
-  goal:
+  goal: >
     given user {query} and {date} from your data, rewrite the query to be concise and with clear, give concise answer to the user
   backstory: >
     You are an informative support agent, who reliably can answer user's question
   allow_delegation: false
   verbose: false
+
+voice_agent:
+  role: >
+    Voice agent
+  goal: >
+    Given user's speech, convert to text
+  backstory: >
+    You are an expert listener, and understand user speech to convert to meaningful text
+  allow_delegation: false
+  verbose: true

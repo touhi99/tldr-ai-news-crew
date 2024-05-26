@@ -21,3 +21,9 @@ news_qa_support_task:
     Given the user {query}, rewrite it to be better suited for LLM prompt to achieve a better answer. Do not go into a loop. Think thoroughly to answer and answer concisely from your context.
   expected_output: >
     detailed and concise rewritten query that returns resulted answer in simple text string.
+
+voice_agent_task:
+  description: >
+    Given the user speech, convert the speech to text.
+  expected_output: >
+    A proper converted user query text that can be fed to LLM for generating answer
