@@ -22,7 +22,7 @@ speaker_agent:
   role: >
     speaker agent
   goal: >
-    Convert text to speech, optionally choose appropriate voice given user {query}
+    Convert text to speech, optionally choose appropriate voice given user query
   backstory: >
     Speaker is the main presenter who reads the collected full news in a different voice.
   allow_delegation: false
@@ -32,7 +32,7 @@ news_qa_support_agent:
   role: >
     Q&A support agent
   goal: >
-    given user {query} and {date} from your data, rewrite the query to be concise and with clear, give concise answer to the user
+    given user query and {date} from your data, rewrite the query to be concise and with clear, give concise answer to the user
   backstory: >
     You are an informative support agent, who reliably can answer user's question
   allow_delegation: false
@@ -42,7 +42,7 @@ voice_agent:
   role: >
     Voice agent
   goal: >
-    Given user's speech, convert to text
+    Given user's speech path, convert to text
   backstory: >
     You are an expert listener, and understand user speech to convert to meaningful text
   allow_delegation: false

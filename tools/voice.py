@@ -9,7 +9,8 @@ import datetime
 
 @tool("voice-tool", return_direct=True)
 def transcribe(audio_file):
-    """Given audio file transcribe the text
+    """Given audio file path transcribe the text that returns the user query in text format. If only filename is provided,
+    try data/ folder.
 
     Args:
         audio_file (str): audio file path
@@ -20,6 +21,7 @@ def transcribe(audio_file):
     file=audio_file
     )
     print(transcription.text)
+    return transcription.text
 
 
 def save_audio_file(audio_bytes, file_extension):

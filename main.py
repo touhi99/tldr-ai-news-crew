@@ -8,14 +8,22 @@ import json
 import time
 import sys 
 from util import *
-from audio_recorder_streamlit import audio_recorder
+from audiorecorder import audiorecorder
 from tools.voice import save_audio_file
 
 with open('config/config.json', 'r') as file:
     config = json.load(file)
 
+if 'recording_started' not in st.session_state:
+    st.session_state.recording_started = False
+if 'recording_finished' not in st.session_state:
+    st.session_state.recording_finished = False
+if 'audio_data' not in st.session_state:
+    st.session_state.audio_data = None
 if 'run_clicked' not in st.session_state:
     st.session_state.run_clicked = False
+if 'crew_result' not in st.session_state:
+    st.session_state.crew_result = None
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
@@ -73,9 +81,9 @@ class StreamToExpander:
 # Streamlit interface
 def run_crewai_app():
     st.title("TLDR news crew")
-    with st.expander("About the Team:"):
-        st.subheader("Diagram")
-        left_co, cent_co,last_co = st.columns(3)
+    # with st.expander("About the Team:"):
+    #     st.subheader("Diagram")
+    #     left_co, cent_co,last_co = st.columns(3)
     
     # Date selection setup
     date_option = st.radio("Choose the type of date input:", ["Single Date", "Date Range"])
@@ -109,33 +117,41 @@ def run_crewai_app():
         with st.expander("Fetching...", expanded=True):
             sys.stdout = StreamToExpander(st)
             with st.spinner("Generating Results"):
-                print("HERE IS DATETONEWS", date_to_use)
                 crew_result = run_crew(date_to_use, run_speech)
+                st.session_state.crew_result = crew_result
 
         end_time = time.time()
         total_time = end_time - start_time
         stopwatch_placeholder.text(f"Total Time Elapsed: {total_time:.2f} seconds")
 
-        st.header("Results:")
-        if run_speech:
-            audio_file = config['file_path']['saved_audio_file']
-            st.markdown(crew_result)
-            st.audio(audio_file, format='audio/mp3', start_time=0)
-        else:
-            st.markdown(crew_result)
+    if st.session_state.run_clicked:
+        if 'crew_result' in st.session_state:
+            st.write("Crew Result:", st.session_state.crew_result)
+            c = st.container()
+            with c:
+                if not st.session_state.recording_started:
+                    st.write("Please start recording...")
+                    audio = audiorecorder("Click to record", "Click to stop recording", key="audio_recorder")
+                    if audio:
+                        st.session_state.recording_started = True
+                        st.session_state.audio_data = audio
+                elif not st.session_state.recording_finished:
+                    st.write("Recording complete, checking audio...")
+                    if st.session_state.audio_data and len(st.session_state.audio_data) > 0:
+                        st.session_state.recording_finished = True
+                        audio_file = "data/recorded_audio.wav"
+                        st.session_state.audio_data.export(audio_file, format="wav")
+                        st.audio(audio_file, format='audio/wav')
+                        st.write("Audio saved and processed.")
+                        handle_chat_input(audio_file, "2024-05-24")
 
-    if st.button('Record'):
-        audio_bytes = audio_recorder()
-        st.write("Recording...")
-        if audio_bytes:
-            st.write("Audio bytes received")
-            st.audio(audio_bytes, format="audio/wav")
-            audio_file = save_audio_file(audio_bytes, "mp3")
-            print("audio saved")
-            handle_chat_input(audio_file, date_to_use)
+                if st.session_state.audio_data:
+                    st.write(f"Stored Audio Length: {len(st.session_state.audio_data)} milliseconds")
+                else:
+                    st.write("No audio data stored in session.")
 
-    for message in st.session_state.messages:
-        st.text(message)
+        for message in st.session_state.messages:
+            st.text(message)
 
 def handle_chat_input(audio_file, date_to_use):
     if audio_file:

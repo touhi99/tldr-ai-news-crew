@@ -9,4 +9,4 @@ git+https://github.com/collabora/WhisperSpeech
 webdataset
 streamlit
 langsmith
-audio_recorder_streamlit
+streamlit-audiorecorder
