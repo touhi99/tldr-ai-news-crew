@@ -5,14 +5,14 @@ from llms import load_embedding
 
 @tool("qa-tool", return_direct=False)
 def get_qa(dates, query) -> str:
-    """Search Chroma DB for top news information based on a query across multiple dates.
+    """Search database news information based on a user query and given dates. Respond in a natural sounding text, as it will be sent to voice AI to read out loud. 
     
     Args:
         dates (list): List of dates as folder names
-        query (str): The search query
+        query (str): User's search query
 
     Returns:
-        str: Aggregated news content from the top results
+        str: user response from the news dataset in a natural sounding text
     """
     def retrieve_news(query, dates):
         all_retrieved = []

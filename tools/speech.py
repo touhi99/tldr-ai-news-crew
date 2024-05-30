@@ -1,10 +1,9 @@
 from langchain.tools import tool
-#from whisperspeech.pipeline import Pipeline
-#import subprocess
 #import json 
 #from openai import OpenAI
 import os 
 import requests
+import json 
 
 XI_API_KEY = os.environ["ELEVEN_LABS_KEY"]
 
@@ -15,7 +14,7 @@ def tts(text, criteria=None):
     """
     Given the {text} query and IF only provided, get the voice pattern {criteria} dictionary if available keys: (gender/accent/age/use case/description of voice json) and assign the right voice id as speaker. if no pattern providedm
     use the default one. 
-    After the found voice id, convert the text to speech. Return an acknowledgement of audio save.
+    After the found voice id, convert the text to speech. Return audio file path and original output text.
     If no voice pattern matched or found, choose the default voice."""
 
     CHUNK_SIZE = 1024 
@@ -57,8 +56,10 @@ def tts(text, criteria=None):
             for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
                 f.write(chunk)
         print("Audio stream saved successfully.")
+        result = {"output_path": OUTPUT_PATH, "text_to_speak": TEXT_TO_SPEAK, "success": True}
     else:
-        print(response.text)
+        result = {"output_path": None, "text_to_speak": response.text, "success": False}
+    return json.dumps(result) 
 
 def get_voice():
     url = "https://api.elevenlabs.io/v1/voices"
@@ -101,30 +102,7 @@ def match_voice(criteria, voice_data):
     else:
         print("No suitable match found.")
         return None
-    
 
-# client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-
-# with open('config/config.json', 'r') as file:
-#     config = json.load(file)
-
-#OLD offline TTS
-'''
-@tool("speaker-tool", return_direct=True)
-def tts(text):
-    """Convert the given query to a speech format
-
-    Args:
-        text (_type_): _description_
-    """
-    pipe = Pipeline(s2a_ref=config['model']['tts_model'])
-
-    audio_file_path = config['file_path']['saved_audio_file']
-    print(text)
-    pipe.generate_to_file(audio_file_path, text, lang='en', cps=10.5, speaker=config['file_path']['clone_file'])
-    subprocess.run(['afplay', audio_file_path]) 
-    return "Synthesized"
-'''
 
 #old OpenAI TTS 
 # @tool("speaker-tool", return_direct=True)

@@ -95,15 +95,12 @@ class TLDRNewsCrew:
     def crew(self, speech_agent_bool=False, qa_agent_bool=False) -> Crew:
         "Create the TLDR News Crew"
         if speech_agent_bool and not qa_agent_bool:
-            print("HERE")
             self.agents = [self.news_fetcher_agent(), self.data_engineer_agent(), self.speaker_agent()]
             self.tasks = [self.data_crawler_task(), self.data_engineer_task(), self.speaker_task()]
         elif not speech_agent_bool and not qa_agent_bool:
-            print("THERE")
             self.agents = [self.news_fetcher_agent(), self.data_engineer_agent()]
             self.tasks = [self.data_crawler_task(), self.data_engineer_task()]
         elif qa_agent_bool:
-            print("INSIDE QA")
             self.agents = [self.voice_agent(), self.qa_agent(), self.speaker_agent()]
             self.tasks = [self.voice_agent_task(), self.qa_agent_task(), self.speaker_task()]
 
@@ -111,6 +108,6 @@ class TLDRNewsCrew:
             agents= self.agents,
             tasks = self.tasks,
             process = Process.sequential,
-            verbose=True,
+            verbose=False,
             max_rpm=8
         )

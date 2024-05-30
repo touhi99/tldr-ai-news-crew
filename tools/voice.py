@@ -20,21 +20,15 @@ def transcribe(audio_file):
     model="whisper-1", 
     file=audio_file
     )
-    print(transcription.text)
     return transcription.text
 
 
-def save_audio_file(audio_bytes, file_extension):
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_name = f"data/audio_{timestamp}.{file_extension}"
-
-    with open(file_name, "wb") as f:
-        f.write(audio_bytes)
-    print("written to ", file_name)
-    return file_name
+def save_audio_file(audio_bytes):
+    audio_file = "data/recorded_audio.wav"
+    audio_bytes.export(audio_file, format="wav")
+    return audio_file
 
 def transcribe_audio(file_path):
     with open(file_path, "rb") as audio_file:
         transcript = transcribe(audio_file)
-
     return transcript["text"]

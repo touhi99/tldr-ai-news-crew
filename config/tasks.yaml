@@ -18,7 +18,7 @@ speaker_task:
 
 news_qa_support_task:
   description: >
-    Given the user query from the voice agent, rewrite it to be better suited for LLM prompt to achieve a better answer. Do not go into a loop. Think thoroughly to answer and answer concisely from your context.
+    Improve the user query received from the voice agent for a more effective LLM prompt, ensuring the query is succinct and directly relevant. Provide a clear and concise answer without entering a loop. Analyze the context deeply to formulate the response. 
   expected_output: >
     detailed and concise rewritten query that returns resulted answer in simple text string.
 
