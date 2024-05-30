@@ -5,7 +5,7 @@ langchain
 langchain-groq
 langchain-openai
 langchain-chroma
-git+https://github.com/collabora/WhisperSpeech   
+#git+https://github.com/collabora/WhisperSpeech   
 webdataset
 streamlit
 langsmith
