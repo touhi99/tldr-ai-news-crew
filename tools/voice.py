@@ -1,10 +1,6 @@
 from langchain.tools import tool
-#import json 
-import os 
-import requests
 from openai import OpenAI
 client = OpenAI()
-import datetime
 
 
 @tool("voice-tool", return_direct=True)
