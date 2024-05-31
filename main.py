@@ -11,9 +11,6 @@ from util import *
 from audiorecorder import audiorecorder
 from tools.voice import save_audio_file
 
-with open('config/config.json', 'r') as file:
-    config = json.load(file)
-
 if 'recording_started' not in st.session_state:
     st.session_state.recording_started = False
 if 'recording_finished' not in st.session_state:

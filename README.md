@@ -1,4 +1,4 @@
-## TLDR-AI-News-Crew-Agents
+## TLDR-AI-News-Crew
 
 AI news going a bit faster to catch up? TLDR (tldr.tech) got it. Even, tldr's daily AI news is also overwhelming? The crew here got you. It's a learning repo with CrewAI to test agent capabilities, some features are just tested for fun and not for potential use.
 
@@ -8,7 +8,7 @@ AI news going a bit faster to catch up? TLDR (tldr.tech) got it. Even, tldr's da
 ```
 pip install -r requirements.txt
 ```
-add api keys from the .env.example. Most cases should be fine with openai key, but some cases uses groq (could be optional, and may need to change llm as openai in the code). Same with Elevenlabs, but it gives certain feature that are not available in OpenAI TTS.
+add api keys from the .env.example. Most cases should be fine with openai key, but some cases uses groq (could be optional, and may need to change llm as openai in the code) -> in future, replace all with ollama llama3 (currently in code, but not properly tested, hence not in the instruction). Same with Elevenlabs, but it gives certain feature that are not available in OpenAI TTS atm.
 
 
 ### Usage

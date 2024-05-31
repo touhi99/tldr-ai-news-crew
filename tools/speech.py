@@ -1,13 +1,10 @@
 from langchain.tools import tool
-#import json 
-#from openai import OpenAI
+from openai import OpenAI
 import os 
 import requests
 import json 
 
 XI_API_KEY = os.environ["ELEVEN_LABS_KEY"]
-
-
 
 @tool("speaker-tool", return_direct=True)
 def tts(text, criteria=None):

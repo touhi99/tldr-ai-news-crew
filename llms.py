@@ -3,9 +3,8 @@ from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_openai import OpenAIEmbeddings
 import os 
-#os.environ["OPENAI_API_KEY"] = "NA"
 
-def load_llm(llm_name): #gpt-4-0125-preview  gpt-4-turbo-2024-04-09
+def load_llm(llm_name):
     if llm_name=='openai':
         llm = ChatOpenAI(model_name="gpt-4o", openai_api_key=os.environ["OPENAI_API_KEY"], temperature = 0.1, streaming=True) # type: ignore
     if llm_name=='groq':
