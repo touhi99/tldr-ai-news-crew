@@ -27,12 +27,10 @@ streamlit run main.py
 
 ### TODO
 
-1. Change prompt to provide more like Q*A bot (refine answer)
-2. Get personalized/preferred input news
-3. add option voice agent or just text agent
-4. add image capabilities
-5. Extension of other TLDR news
-6. Proper speech data handle
+1. Get personalized/preferred input news
+2. add image capabilities
+3. Extension of other TLDR news
+4. Proper speech data handle
 
 Inspired from some examples:
 - Based upon [Crew Examples](https://mer.vin/2024/02/crewai-rag-using-tools/)
