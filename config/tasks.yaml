@@ -22,6 +22,12 @@ news_qa_support_task:
   expected_output: >
     detailed and concise rewritten query that returns resulted answer in simple text string.
 
+text_qa_task:
+  description: >
+    given user {query}, rewrite the query for better search, provide a clear and concise answer without entering a loop. Analyze the context deeply to formulate the response. 
+  expected_output: >
+    detailed and concise rewritten query that returns resulted answer in simple text string.
+
 voice_agent_task:
   description: >
     Given the user {audio} filepath, transcribe the speech to text.

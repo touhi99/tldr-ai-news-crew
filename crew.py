@@ -4,7 +4,7 @@ from llms import load_llm
 from tools.crawler import crawler_tool
 from tools.vectordb import embed_news_for_dates
 from tools.speech import tts
-from tools.qa import get_qa
+from tools.qa import get_qa, get_qa_text
 from tools.voice import transcribe
 @CrewBase
 class TLDRNewsCrew:
@@ -56,6 +56,14 @@ class TLDRNewsCrew:
             tools = [get_qa]
         )
 
+    @agent
+    def text_qa_agent(self) -> Agent:
+        return Agent(
+            config = self.agents_config['text_qa_agent'],
+            llm = self.openai_llm,
+            tools = [get_qa_text]
+        )
+    
     @task
     def data_crawler_task(self) -> Task:
         return Task(
@@ -85,6 +93,13 @@ class TLDRNewsCrew:
         )
     
     @task
+    def text_qa_agent_task(self) -> Task:
+        return Task(
+            config = self.tasks_config['text_qa_task'],
+            agent = self.text_qa_agent()
+        )
+    
+    @task
     def voice_agent_task(self) -> Task:
         return Task(
             config = self.tasks_config['voice_agent_task'],
@@ -92,22 +107,22 @@ class TLDRNewsCrew:
         )
     
     @crew
-    def crew(self, speech_agent_bool=False, qa_agent_bool=False) -> Crew:
+    def crew(self, qa_agent_bool=None, run_analysis_bool=True, speech_bool=None) -> Crew:
         "Create the TLDR News Crew"
-        if speech_agent_bool and not qa_agent_bool:
-            self.agents = [self.news_fetcher_agent(), self.data_engineer_agent(), self.speaker_agent()]
-            self.tasks = [self.data_crawler_task(), self.data_engineer_task(), self.speaker_task()]
-        elif not speech_agent_bool and not qa_agent_bool:
+        if run_analysis_bool and not qa_agent_bool:
             self.agents = [self.news_fetcher_agent(), self.data_engineer_agent()]
             self.tasks = [self.data_crawler_task(), self.data_engineer_task()]
-        elif qa_agent_bool:
+        elif run_analysis_bool and qa_agent_bool and speech_bool:
             self.agents = [self.voice_agent(), self.qa_agent(), self.speaker_agent()]
             self.tasks = [self.voice_agent_task(), self.qa_agent_task(), self.speaker_task()]
+        elif run_analysis_bool and qa_agent_bool and not speech_bool:
+            self.agents = [self.text_qa_agent()]
+            self.tasks = [self.text_qa_agent_task()]
 
         return Crew(
             agents= self.agents,
             tasks = self.tasks,
             process = Process.sequential,
-            verbose=False,
+            verbose=True,
             max_rpm=8
         )

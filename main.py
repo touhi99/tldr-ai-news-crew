@@ -23,13 +23,20 @@ if 'crew_result' not in st.session_state:
     st.session_state.crew_result = None
 if 'messages' not in st.session_state:
     st.session_state.messages = []
+if 'analysis' not in st.session_state:
+    st.session_state.analysis = None
+if 'qa_agent_bool' not in st.session_state:
+    st.session_state.qa_agent_bool = None
 
-def run_crew(crawling_date, run_speech=None):
+def run_crew(crawling_date, query=None, audio=None, run_analysis=None, qa_agent_bool=None, speech_bool=None):
     inputs = { 
         'date' : crawling_date,
+        'query': query,
+        'audio': audio
     }
-    speech_agent = run_speech
-    return TLDRNewsCrew().crew(speech_agent).kickoff(inputs=inputs)
+    return TLDRNewsCrew().crew(run_analysis_bool=run_analysis, 
+                               qa_agent_bool=qa_agent_bool,
+                               speech_bool=speech_bool).kickoff(inputs=inputs)
 
 class StreamToExpander:
     def __init__(self, expander):
@@ -103,19 +110,21 @@ def run_crewai_app():
     run_speech = st.checkbox("Use Voice Agent")
 
     if st.button("Run Analysis", key='run_analysis'):
-        #st.session_state.run_clicked = True
         st.session_state.recording_started = False
         st.session_state.recording_finished = False
         st.session_state.messages = []
+        st.session_state.analysis = True
+        st.session_state.qa_agent_bool = False
         stopwatch_placeholder = st.empty()
         start_time = time.time()
 
         with st.expander("Fetching...", expanded=False):
-            sys.stdout = StreamToExpander(st)
+            #sys.stdout = StreamToExpander(st)
             with st.spinner("Generating Results"):
-                crew_result = run_crew(date_to_use, run_speech)
+                crew_result = run_crew(date_to_use, run_analysis=st.session_state.analysis, qa_agent_bool=st.session_state.qa_agent_bool, speech_bool=run_speech)
                 st.session_state.crew_result = crew_result
                 st.session_state.run_clicked = True
+                st.session_state.qa_agent_bool = True
 
         end_time = time.time()
         total_time = end_time - start_time
@@ -123,29 +132,43 @@ def run_crewai_app():
 
     if 'run_clicked' in st.session_state and st.session_state.run_clicked:
         st.write("Crew Result:", st.session_state.get('crew_result', 'No result yet'))
+        if run_speech:
+            if st.button("Record New Message"):
+                st.session_state.recording_started = False
+                st.session_state.recording_finished = False
+                st.experimental_rerun()  
 
-        if st.button("Record New Message"):
-            st.session_state.recording_started = False
-            st.session_state.recording_finished = False
-            st.experimental_rerun()  
+            c = st.container()
+            with c:
+                if not st.session_state.recording_started and not st.session_state.recording_finished:
+                    st.write("Please start recording...")
+                    audio = audiorecorder("Click to record", "Click to stop recording", key="audio_recorder")
+                    if audio:
+                        st.session_state.audio_data = audio
+                        st.session_state.recording_started = True
 
-        c = st.container()
-        with c:
-            if not st.session_state.recording_started and not st.session_state.recording_finished:
-                st.write("Please start recording...")
-                audio = audiorecorder("Click to record", "Click to stop recording", key="audio_recorder")
-                if audio:
-                    st.session_state.audio_data = audio
-                    st.session_state.recording_started = True
+                elif st.session_state.recording_started and not st.session_state.recording_finished:
+                    st.write("Recording complete, checking audio...")
+                    if st.session_state.audio_data:
+                        audio_file = save_audio_file(st.session_state.audio_data)
+                        play_audio(audio_file, format='audio/wav')
+                        st.write("Audio saved and processed.")
+                        handle_chat_input(date_to_use, audio_file=audio_file, qa_agent_bool=st.session_state.qa_agent_bool, run_speech=run_speech)
+                        st.session_state.recording_finished = True
+        else:
+            # Generate a unique key every run to ensure the input field is always reset
+            session_key = "user_text_input_" + str(st.session_state.get("input_reset_counter", 0))
+            user_text = st.text_input("Enter your message:", key=session_key)
 
-            elif st.session_state.recording_started and not st.session_state.recording_finished:
-                st.write("Recording complete, checking audio...")
-                if st.session_state.audio_data:
-                    audio_file = save_audio_file(st.session_state.audio_data)
-                    play_audio(audio_file, format='audio/wav')
-                    st.write("Audio saved and processed.")
-                    handle_chat_input(audio_file, date_to_use)
-                    st.session_state.recording_finished = True
+            if st.button("Send"):
+                if user_text:
+                    handle_chat_input(date_to_use, query=user_text, qa_agent_bool=st.session_state.qa_agent_bool, run_speech=run_speech)
+                    st.session_state.messages.append(f"You: {user_text}")
+                    # Increment the counter to reset the input field
+                    st.session_state.input_reset_counter = st.session_state.get("input_reset_counter", 0) + 1
+                    st.experimental_rerun()  # Optional: Only if necessary to refresh other parts of the UI
+                else:
+                    st.error("Please enter a message to send.")
 
         for message in st.session_state.get('messages', []):
             if message.startswith("You:"):
@@ -156,14 +179,14 @@ def run_crewai_app():
                 assistant_message.write(message.replace("System:", ""))
 
 
-def handle_chat_input(audio_file, date_to_use):
+def handle_chat_input(date_to_use, audio_file=None, query=None, qa_agent_bool=None, run_speech=None):
     if audio_file:
         st.session_state.messages.append(f"You:")
         st.session_state.messages.append("System: Processing your request...")
         with st.expander("Fetching answer...", expanded=False):
-            sys.stdout = StreamToExpander(st)
             with st.spinner("Generating Results"):
-                response_json = TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"audio": audio_file, "date": date_to_use})
+                #response_json = TLDRNewsCrew().crew(qa_agent_bool=True).kickoff(inputs={"audio": audio_file, "date": date_to_use})
+                response_json = run_crew(date_to_use, audio=audio_file, run_analysis=st.session_state.analysis, qa_agent_bool=qa_agent_bool, speech_bool=run_speech)
 
             if isinstance(response_json, str):
                 response_data = json.loads(response_json)
@@ -182,7 +205,13 @@ def handle_chat_input(audio_file, date_to_use):
             st.session_state.recording_started = False
             st.session_state.recording_finished = False
             st.session_state.audio_data = None        
-
+    elif query:
+        st.session_state.messages.append("You:")
+        st.session_state.messages.append("System: Processing your request...")
+        with st.expander("Fetching answer...", expanded=False):
+            with st.spinner("Generating Results"):
+                response_text = run_crew(date_to_use, query=query, run_analysis=st.session_state.analysis, qa_agent_bool=qa_agent_bool, speech_bool=run_speech)
+                st.session_state.messages.append(f"System: {response_text}")
 
 def play_audio(audio_data, format='audio/mp3'):
     st.audio(audio_data, format)

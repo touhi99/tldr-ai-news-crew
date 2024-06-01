@@ -36,7 +36,17 @@ news_qa_support_agent:
   backstory: >
     You are an informative support agent, who reliably can answer user's question
   allow_delegation: false
-  verbose: false
+  verbose: true
+
+text_qa_agent:
+  role: >
+    Text Q&A support agent
+  goal: >
+    When provided with a user query and a specific {date} from your data, rewrite the query to be concise and clear. Then, provide a concise and accurate answer to the user as a helpful supportive agent.
+  backstory: >
+    You are an informative support agent, who reliably can answer user's question
+  allow_delegation: false
+  verbose: true
 
 voice_agent:
   role: >
