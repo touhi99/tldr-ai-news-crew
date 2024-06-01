@@ -86,24 +86,24 @@ class StreamToExpander:
 
 # Streamlit interface
 def run_crewai_app():
-    if 'OPENAI_API_KEY' not in st.session_state or 'ELEVEN_LABS_API_KEY' not in st.session_state:
-        # Use placeholders and labels to guide user input
-        st.session_state['OPENAI_API_KEY'] = st.text_input("Enter OPENAI_API_KEY:", value="")
-        st.session_state['ELEVEN_LABS_API_KEY'] = st.text_input("Enter ELEVEN_LABS_API_KEY:", value="")
+    # if 'OPENAI_API_KEY' not in st.session_state or 'ELEVEN_LABS_API_KEY' not in st.session_state:
+    #     # Use placeholders and labels to guide user input
+    #     st.session_state['OPENAI_API_KEY'] = st.text_input("Enter OPENAI_API_KEY:", value="")
+    #     st.session_state['ELEVEN_LABS_API_KEY'] = st.text_input("Enter ELEVEN_LABS_API_KEY:", value="")
         
-        # A button to confirm the input and continue running the app
-        if st.button("Submit Keys"):
-            os.environ['OPENAI_API_KEY'] = st.session_state['OPENAI_API_KEY']
-            os.environ['ELEVEN_LABS_API_KEY'] = st.session_state['ELEVEN_LABS_API_KEY']
-            st.session_state.keys_submitted = True  # A flag to indicate keys are set
-    else:
-        # Main application logic here
-        key1 = os.getenv('OPENAI_API_KEY')
-        key2 = os.getenv('ELEVEN_LABS_API_KEY')
-        st.write("Your keys have been accepted. The app is now running.")
-        # You can now use key1 and key2 within your application logic
-        st.write(f"OPENAI_API_KEY: {key1}")
-        st.write(f"ELEVEN_LABS_API_KEY: {key2}")
+    #     # A button to confirm the input and continue running the app
+    #     if st.button("Submit Keys"):
+    #         os.environ['OPENAI_API_KEY'] = st.session_state['OPENAI_API_KEY']
+    #         os.environ['ELEVEN_LABS_API_KEY'] = st.session_state['ELEVEN_LABS_API_KEY']
+    #         st.session_state.keys_submitted = True  # A flag to indicate keys are set
+    # else:
+    #     # Main application logic here
+    #     key1 = os.getenv('OPENAI_API_KEY')
+    #     key2 = os.getenv('ELEVEN_LABS_API_KEY')
+    #     st.write("Your keys have been accepted. The app is now running.")
+    #     # You can now use key1 and key2 within your application logic
+    #     st.write(f"OPENAI_API_KEY: {key1}")
+    #     st.write(f"ELEVEN_LABS_API_KEY: {key2}")
 
     st.title("TLDR AI News Crew")
     date_option = st.radio("Choose the type of date input:", ["Single Date", "Date Range"])
