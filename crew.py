@@ -20,7 +20,7 @@ class TLDRNewsCrew:
     def news_fetcher_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['data_crawler'],
-            llm = self.groq_llm,
+            llm = self.openai_llm, #self.groq_llm,
             tools = [crawler_tool]
         )
     
@@ -28,7 +28,7 @@ class TLDRNewsCrew:
     def data_engineer_agent(self) -> Agent:
         return Agent(
             config = self.agents_config['data_engineer'],
-            llm = self.groq_llm,
+            llm = self.openai_llm, #self.groq_llm,
             tools = [embed_news_for_dates]
         )
     
@@ -44,7 +44,7 @@ class TLDRNewsCrew:
     def voice_agent(self) -> Agent:
         return Agent(
             config = self.agents_config['voice_agent'],
-            llm = self.groq_llm,
+            llm = self.openai_llm, #self.groq_llm,
             tools = [transcribe]
         )
     
