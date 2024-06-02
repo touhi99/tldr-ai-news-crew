@@ -19,7 +19,8 @@ streamlit run main.py
  - Give a date or range of date input.
  - it crawls all TLDR ai data 
  - Use voice agent / text agent
- - Start chatting
+ - Start talking/chatting. Elevenlabs voice mode adds some feature like choosing which gender/accent/type of voice. be mindful on apis :)
+ - UI is slightly annoying now, may a later fix
 
  Screenshot:
 
@@ -30,7 +31,7 @@ streamlit run main.py
 1. Get personalized/preferred input news
 2. add image capabilities
 3. Extension of other TLDR news
-4. Proper speech data handle
+4. Proper way speech data handle
 
 Inspired from some examples:
 - Based upon [Crew Examples](https://mer.vin/2024/02/crewai-rag-using-tools/)
